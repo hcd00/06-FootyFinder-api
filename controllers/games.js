@@ -2,14 +2,7 @@ const Game = require('../models/Game');
 const { StatusCodes } = require('http-status-codes')
 const { NotFoundError, BadRequestError } = require('../errors')
 
-const getAllGames = async (req, res) => {
-
-    const games = await Game.find({ createdBy: req.user.userId }).sort('createdAt')
-    res.status(StatusCodes.OK).json({ games, count: games.length })
-}
-
-const getGame = async (req, res) => {
-    const { user: { userId }, params: { id: gameId } } = req;
+const getGameBusinessLogic = async (userId, gameId) => {
     const game = await Game.findOne({
         _id: gameId,
         createdBy: userId
@@ -17,7 +10,33 @@ const getGame = async (req, res) => {
     if (!game) {
         throw new NotFoundError(`No game with id ${gameId}`);
     }
+    return game;
+}
+
+const getAllGames = async (req, res) => {
+    const games = await Game.find({ createdBy: req.user.userId }).sort('createdAt')
+    res.status(StatusCodes.OK).json({ games, count: games.length })
+}
+
+const getGame = async (req, res) => {
+    const game = getGameBusinessLogic(userId, gameId);
     res.status(StatusCodes.OK).json({ game })
+}
+
+const joinGame = async (req, res) => {
+    //gameId and userId would come from front end
+    const { user: { userId, email }, params: { id: gameId } } = req;
+    const game = getGameBusinessLogic(userId, gameId);
+    let status = " "
+    if (game.playerList.length >= game.maxAmountPlayers) {
+        game.waitList.push(userId);
+        status = `${email} has joined the waitlist for game ${gameId}`
+    } else {
+        game.playerList.push(userId);
+        status = `${email} has joined the playerlist for game ${gameId}`
+    }
+    game.Save()
+    return res.status(StatusCodes.OK).json({status});
 }
 
 const createGame = async (req, res) => {
@@ -66,5 +85,6 @@ module.exports = {
     getGame,
     createGame,
     updateGame,
-    deleteGame
+    deleteGame,
+    joinGame
 }
