@@ -22,6 +22,20 @@ const GameSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    maxAmountPlayers: {
+        type: Number,
+        default: 20
+    },
+    playerList: {
+        type: [mongoose.Types.ObjectId],
+        ref: "User",
+        default: [],
+    },
+    waitList: {
+        type: [mongoose.Types.ObjectId],
+        ref: "User",
+        default: [],
+    },
     createdBy: {
         type: mongoose.Types.ObjectId,
         ref: 'User',
@@ -29,5 +43,6 @@ const GameSchema = new mongoose.Schema({
     }
 
 }, { timestamps: true })
+
 
 module.exports = mongoose.model('Game', GameSchema);
