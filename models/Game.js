@@ -24,21 +24,17 @@ const GameSchema = new mongoose.Schema({
     },
     maxAmountPlayers: {
         type: Number,
-        default: 0
+        default: 20
     },
     playerList: {
-        type: Array,
+        type: [mongoose.Types.ObjectId],
+        ref: "User",
         default: [],
-        //set up validation for player 
-        //if player list < play they can join
     },
-
-    //Waitlist set up queue
     waitList: {
-        type: Array,
+        type: [mongoose.Types.ObjectId],
+        ref: "User",
         default: [],
-        //set up validation for player 
-        //if player list < play they can join
     },
     createdBy: {
         type: mongoose.Types.ObjectId,

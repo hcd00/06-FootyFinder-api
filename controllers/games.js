@@ -24,10 +24,16 @@ const getGame = async (req, res) => {
 }
 
 const joinGame = async (req, res) => {
+    let status = " ";
     //gameId and userId would come from front end
     const { user: { userId, email }, params: { id: gameId } } = req;
-    const game = getGameBusinessLogic(userId, gameId);
-    let status = " "
+    const game = await getGameBusinessLogic(userId, gameId);
+
+    if (!game) {
+        throw new NotFoundError(`No game with id ${gameId}`);
+    }
+
+
     if (game.playerList.length >= game.maxAmountPlayers) {
         game.waitList.push(userId);
         status = `${email} has joined the waitlist for game ${gameId}`
@@ -35,13 +41,15 @@ const joinGame = async (req, res) => {
         game.playerList.push(userId);
         status = `${email} has joined the playerlist for game ${gameId}`
     }
-    game.Save()
-    return res.status(StatusCodes.OK).json({status});
+
+    await game.save()
+    return res.status(StatusCodes.OK).json({ status });
 }
 
 const createGame = async (req, res) => {
     req.body.createdBy = req.user.userId;
     const game = await Game.create(req.body);
+    game.playerList.push(req.user.userId);
     res.status(StatusCodes.CREATED).json({ game })
 }
 
