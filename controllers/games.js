@@ -19,7 +19,8 @@ const getAllGames = async (req, res) => {
 }
 
 const getGame = async (req, res) => {
-    const game = getGameBusinessLogic(userId, gameId);
+    const { user: { userId }, params: { id: gameId } } = req;
+    const game = await getGameBusinessLogic(userId, gameId);
     res.status(StatusCodes.OK).json({ game })
 }
 
@@ -85,7 +86,7 @@ const deleteGame = async (req, res) => {
     if (!game) {
         throw new NotFoundError(`No game with id ${gameId}`);
     }
-    res.status(StatusCodes.OK).send();
+    res.status(StatusCodes.OK).json({ msg: "The entry was deleted." });
 }
 
 module.exports = {
