@@ -14,8 +14,11 @@ const GameSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Waiting for players', 'Game is about to begin',
-            'Game started', "Game is about to end", "Game has finished."],
+        enum: ['Waiting for players',
+            'Game is about to begin',
+            'Game started',
+            "Game is about to end",
+            "Game has finished"],
         default: 'Waiting for players'
     },
     isFull: {

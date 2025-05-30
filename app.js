@@ -18,6 +18,7 @@ const gamesRouter = require('./routes/games');
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+app.use(express.static("public"));
 app.use(express.json());
 // extra packages
 app.set('trust proxy', 1);
